@@ -1,24 +1,36 @@
-// src/AdminLoginPage.js
 import React, { useState } from 'react';
-import './LoginPage.css'; // You can reuse the same CSS file
+import './LoginPage.css';
 
 const AdminLoginPage = () => {
-    const [email, setEmail] = useState('');
+    const [name, setName] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!email || !password) {
-            setError('Please enter both email and password.');
+        if (!name || !password) {
+            setError('Please enter both username and password.');
             return;
         }
 
-        console.log('Admin Email:', email);
-        console.log('Admin Password:', password);
+        try {
+            const response = await fetch('http://localhost:8080/api/v1/admins/login', { // Update the endpoint if needed
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, password }),
+            });
 
-        setError('');
+            const message = await response.text();
+
+            if (response.ok) {
+                alert(message);
+            } else {
+                setError(message);
+            }
+        } catch (error) {
+            setError('Error logging in. Please try again later.');
+        }
     };
 
     return (
@@ -27,12 +39,12 @@ const AdminLoginPage = () => {
             {error && <p className="error">{error}</p>}
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
-                    <label htmlFor="email">Email:</label>
+                    <label htmlFor="name">Username:</label> {}
                     <input
-                        type="email"
-                        id="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        type="text"
+                        id="name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
                         required
                     />
                 </div>
