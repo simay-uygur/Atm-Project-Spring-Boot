@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface UserServicesInterface {
 
-
     //CRUD
     public List<UserDto> getAllUsers();
+    public List<UserDto> getUsersWithSameAdmin(Integer id);
 
-    public UserDto createUser(UserDto userDto);
+    public UserDto createUser(UserDto user);
     public UserDto getUserById(Long id) throws Throwable;
     public UserDto updateUser(Long id, UserDto employeeDto) throws Throwable;
     public void deleteUser(Long id) throws Throwable;
@@ -21,4 +21,5 @@ public interface UserServicesInterface {
     //model mapper
     public UserDto entityToDto(UserEntity userEntity);
     public UserEntity dtoToEntity(UserDto userDto);
+
 }

@@ -39,6 +39,19 @@ public class UserServiceImpl implements UserServicesInterface {
     }
 
     @Override
+    public List<UserDto> getUsersWithSameAdmin(Integer adminId) {
+        List<UserDto> userDtoList = new ArrayList<>();
+        Iterable<UserEntity> iterable = userRepository.findAll();
+        for (UserEntity userEntity : iterable) {
+            if(userEntity.getAdminId() == (adminId)) {
+                UserDto userDto = entityToDto(userEntity);
+                userDtoList.add(userDto);
+            }
+        }
+        return userDtoList;
+    }
+
+    @Override
     public UserDto createUser(UserDto userDto) {
         if (userRepository.findByName(userDto.getName()) != null) {
             throw new IllegalArgumentException("Username already exists. Please choose a different username.");

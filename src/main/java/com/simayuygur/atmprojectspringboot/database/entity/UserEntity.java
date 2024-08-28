@@ -16,8 +16,6 @@ import lombok.extern.log4j.Log4j2;
 @Table(name = "customers")
 public class UserEntity extends BaseEntity{
 
-
-
    @Column(name = "name", nullable = false , unique = true) //for login i made it unique
    private String name;
 
