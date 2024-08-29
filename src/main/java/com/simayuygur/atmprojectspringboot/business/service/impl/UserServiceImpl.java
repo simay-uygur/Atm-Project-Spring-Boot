@@ -2,6 +2,7 @@ package com.simayuygur.atmprojectspringboot.business.service.impl;
 
 import com.simayuygur.atmprojectspringboot.business.UserDto;
 import com.simayuygur.atmprojectspringboot.business.service.UserServicesInterface;
+import com.simayuygur.atmprojectspringboot.database.entity.AdminEntity;
 import com.simayuygur.atmprojectspringboot.database.entity.UserEntity;
 import com.simayuygur.atmprojectspringboot.database.repo.UserRepository;
 import org.modelmapper.ModelMapper;
@@ -39,19 +40,6 @@ public class UserServiceImpl implements UserServicesInterface {
     }
 
     @Override
-    public List<UserDto> getUsersWithSameAdmin(Integer adminId) {
-        List<UserDto> userDtoList = new ArrayList<>();
-        Iterable<UserEntity> iterable = userRepository.findAll();
-        for (UserEntity userEntity : iterable) {
-            if(userEntity.getAdminId() == (adminId)) {
-                UserDto userDto = entityToDto(userEntity);
-                userDtoList.add(userDto);
-            }
-        }
-        return userDtoList;
-    }
-
-    @Override
     public UserDto createUser(UserDto userDto) {
         if (userRepository.findByName(userDto.getName()) != null) {
             throw new IllegalArgumentException("Username already exists. Please choose a different username.");
@@ -77,7 +65,8 @@ public class UserServiceImpl implements UserServicesInterface {
         user.setName(userEntity.getName());
         user.setPassword(userEntity.getPassword());
         user.setAmount(userEntity.getAmount());
-        user.setAdminId(user.getAdminId());
+        user.setAdmin(userEntity.getAdmin());
+        user.setIbanNo(userEntity.getIbanNo()); //iban and admin are added now
         UserEntity updatedUser = userRepository.save(user);
         return entityToDto(updatedUser);
     }
@@ -87,6 +76,30 @@ public class UserServiceImpl implements UserServicesInterface {
         UserEntity userEntity = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User does not exist with id " + id));
         userRepository.deleteById(id);
+    }
+
+    @Override
+    public Long getUserIdByUsername(String name) throws Throwable {
+        List<UserEntity> userEntityList = userRepository.findAll();
+        for (UserEntity userEntity : userEntityList) {
+            if (userEntity.getName().equals(name)) {
+                return userEntity.getId();
+            }
+        }
+        throw new ResourceNotFoundException("Admin does not exist with name " + name);
+    }
+
+    @Override
+    public List<UserDto> getUsersWithSameAdmin(Long adminId) {
+        List<UserEntity> users = userRepository.findByAdminId(adminId);
+        List<UserDto> userDtoList = new ArrayList<>();
+        for (UserEntity userEntity : users) {
+            if(userEntity.getAdmin().getId().longValue() == (adminId) ) {
+                UserDto userDto = entityToDto(userEntity);
+                userDtoList.add(userDto);
+            }
+        }
+        return userDtoList;
     }
 
     @Override

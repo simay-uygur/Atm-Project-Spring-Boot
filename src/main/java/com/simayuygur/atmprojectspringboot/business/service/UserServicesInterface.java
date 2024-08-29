@@ -9,14 +9,14 @@ public interface UserServicesInterface {
 
     //CRUD
     public List<UserDto> getAllUsers();
-    public List<UserDto> getUsersWithSameAdmin(Integer id);
 
     public UserDto createUser(UserDto user);
     public UserDto getUserById(Long id) throws Throwable;
     public UserDto updateUser(Long id, UserDto employeeDto) throws Throwable;
     public void deleteUser(Long id) throws Throwable;
-    //public ResponseEntity<UserDto> getUserByUsername(String name) throws Throwable;
+    public Long getUserIdByUsername(String name) throws Throwable;
     public boolean authenticateUser(String name, String password);
+    public List<UserDto> getUsersWithSameAdmin(Long adminId);
 
     //model mapper
     public UserDto entityToDto(UserEntity userEntity);

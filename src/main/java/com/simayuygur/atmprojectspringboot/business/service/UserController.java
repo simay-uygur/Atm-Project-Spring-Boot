@@ -19,14 +19,21 @@ public class UserController {
     private UserServicesInterface userServices;
 
     @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestBody UserDto userDto) {
+    public ResponseEntity<?> loginUser(@RequestBody UserDto userDto) {
         boolean isAuthenticated = userServices.authenticateUser(userDto.getName(), userDto.getPassword());
 
         if (isAuthenticated) {
-            return ResponseEntity.ok("Login successful!");
+            Long userId = null;
+            try {
+                userId = userServices.getUserIdByUsername(userDto.getName());
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+            return ResponseEntity.ok(Map.of("message", "Login successful!", "adminId", userId));
         } else {
-            return ResponseEntity.status(401).body("Invalid username or password.");
+            return ResponseEntity.status(401).body(Map.of("message", "Invalid username or password."));
         }
+
     }
 
     @PostMapping
@@ -35,7 +42,7 @@ public class UserController {
         return ResponseEntity.status(201).body(createdUser);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/get/{id}")
     public ResponseEntity<UserDto> getUserById(@PathVariable Long id) throws Throwable {
         UserDto userDto = userServices.getUserById(id);
         if (userDto == null) {
@@ -66,7 +73,7 @@ public class UserController {
 
     @GetMapping("/selections/{id}/allCustomers")
     public ResponseEntity<List<UserDto>> getAllCustomers(@PathVariable Integer id) throws Throwable {
-        List<UserDto> users = userServices.getUsersWithSameAdmin(id);
+        List<UserDto> users = userServices.getUsersWithSameAdmin(id.longValue());
         return ResponseEntity.ok(users);
     }
 }

@@ -1,8 +1,6 @@
 package com.simayuygur.atmprojectspringboot.database.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,14 +23,19 @@ public class UserEntity extends BaseEntity{
    @Column(name = "amount", nullable = false)
    private Double amount = 0.0;
 
-   @Column(name = "admin_id", nullable = false)
-   private Integer adminId;
+   @ManyToOne(fetch = FetchType.LAZY)
+   @JoinColumn(name = "admin_id", referencedColumnName = "id")
+   private AdminEntity admin;
 
-   public UserEntity(String name, String password,Double amount,  Integer adminId) {
+   @Column(name = "iban_no", nullable = false, unique = true)
+   private String ibanNo;
+
+   public UserEntity(String name, String password,Double amount, AdminEntity admin, String ibanNo) {
       this.amount = amount;
       this.name = name;
       this.password = password;
-      this.adminId = adminId;
+      this.admin = admin;
+      this.ibanNo = ibanNo;
    }
 
 }

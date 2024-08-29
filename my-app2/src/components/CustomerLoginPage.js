@@ -1,20 +1,13 @@
 import React, { useState } from 'react';
-import './LoginPage.css'; // Reuse the CSS for styling
+import { useNavigate } from 'react-router-dom'; // Import useNavigate from react-router-dom
+import UserService from './UserService'; // Adjust import path as needed
+import './LoginPage.css';
 
 const CustomerLoginPage = () => {
     const [name, setName] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-
-    const handleNameChange = (e) => {
-        setName(e.target.value);
-        setError(''); // Clears error when typing
-    };
-
-    const handlePasswordChange = (e) => {
-        setPassword(e.target.value);
-        setError(''); // Clears error when typing
-    };
+    const navigate = useNavigate(); // Initialize useNavigate
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -25,18 +18,12 @@ const CustomerLoginPage = () => {
         }
 
         try {
+            const response = await UserService.loginUser(name, password);
+            const { message, userId } = response;
 
-            const response = await fetch('http://localhost:8080/api/v1/customers/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, password }),
-            });
-
-
-            const message = await response.text();
-
-            if (response.ok) {
-                alert(message); // Consider displaying this in the component instead
+            if (message === "Login successful!") {
+//${userId}
+                navigate(`/customers/get/` + userId); // Navigate to customer info page with user ID
             } else {
                 setError(message);
             }
@@ -51,12 +38,12 @@ const CustomerLoginPage = () => {
             {error && <p className="error">{error}</p>}
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
-                    <label htmlFor="username">Username:</label>
+                    <label htmlFor="name">Username:</label>
                     <input
                         type="text"
-                        id="username"
+                        id="name"
                         value={name}
-                        onChange={handleNameChange}
+                        onChange={(e) => setName(e.target.value)}
                         required
                     />
                 </div>
@@ -66,7 +53,7 @@ const CustomerLoginPage = () => {
                         type="password"
                         id="password"
                         value={password}
-                        onChange={handlePasswordChange}
+                        onChange={(e) => setPassword(e.target.value)}
                         required
                     />
                 </div>
