@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate from react-router-dom
+import AdminService from "./AdminService";
 import './LoginPage.css';
 
 const AdminLoginPage = () => {
     const [name, setName] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const navigate = useNavigate(); // Initialize useNavigate
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -15,16 +18,12 @@ const AdminLoginPage = () => {
         }
 
         try {
-            const response = await fetch('http://localhost:8080/api/v1/admins/login', { // Update the endpoint if needed
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, password }),
-            });
+            const response = await AdminService.loginAdmin(name, password);
+            const { message, adminId } = response;
 
-            const message = await response.text();
-
-            if (response.ok) {
-                alert(message);
+            if (message === "Login successful!") {
+                //alert(message);
+                navigate(`/admins/${adminId}/allCustomers`); // Navigate to CustomerListPage with adminId
             } else {
                 setError(message);
             }
@@ -39,7 +38,7 @@ const AdminLoginPage = () => {
             {error && <p className="error">{error}</p>}
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
-                    <label htmlFor="name">Username:</label> {}
+                    <label htmlFor="name">Username:</label>
                     <input
                         type="text"
                         id="name"

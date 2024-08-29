@@ -1,12 +1,13 @@
 package com.simayuygur.atmprojectspringboot.database.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -25,9 +26,13 @@ public class AdminEntity extends BaseEntity{
     @Column(name = "amount_total", nullable = false)
     private Double amountTotal = 0.0;
 
-    public AdminEntity(String name, String password, Double amountTotal) {
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "admin")
+    private Set<UserEntity> users;
+
+    public AdminEntity(String name, String password, Double amountTotal, Set<UserEntity> users) {
         this.name = name;
         this.password = password;
         this.amountTotal = amountTotal;
+        this.users = users;
     }
 }

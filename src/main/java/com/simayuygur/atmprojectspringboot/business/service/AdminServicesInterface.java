@@ -14,6 +14,8 @@ public interface AdminServicesInterface {
     public AdminDto updateAdmin(Long id, AdminDto adminDto) throws Throwable;
     public void deleteAdmin(Long id) throws Throwable;
     public boolean authenticateAdmin(String name, String password);
+    //public Set<UserEntity> getAllCustomers(Long id);
+    public Long getAdminIdByUsername(String name) throws Throwable;
 
     //model mapper
     public AdminDto entityToDto(AdminEntity AdminEntity);

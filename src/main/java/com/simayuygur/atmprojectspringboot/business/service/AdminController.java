@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
+//i didnt use any logger in both of the controller classes
 @RestController
 @RequestMapping("/api/v1/admins")
 public class AdminController {
@@ -20,20 +20,30 @@ public class AdminController {
     @Qualifier("adminServiceImpl")
     private AdminServicesInterface adminServices;
 
-    @PostMapping("/login")
-    public ResponseEntity<String> loginAdmin(@RequestBody AdminDto adminDto) {
-        boolean isAuthenticated = adminServices.authenticateAdmin(adminDto.getName(), adminDto.getPassword());
+    @Autowired
+    @Qualifier("userServiceImpl")
+    private UserServicesInterface userServices;
 
+
+    @PostMapping("/login")
+    public ResponseEntity<?> loginAdmin(@RequestBody AdminDto adminDto) {
+        boolean isAuthenticated = adminServices.authenticateAdmin(adminDto.getName(), adminDto.getPassword());
         if (isAuthenticated) {
-            return ResponseEntity.ok("Login successful!");
+            Long adminId = null;
+            try {
+                adminId = adminServices.getAdminIdByUsername(adminDto.getName());
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+            return ResponseEntity.ok(Map.of("message", "Login successful!", "adminId", adminId));
         } else {
-            return ResponseEntity.status(401).body("Invalid username or password.");
+            return ResponseEntity.status(401).body(Map.of("message", "Invalid username or password."));
         }
     }
 
     @PostMapping
-    public ResponseEntity<AdminDto> createAdmin(@RequestBody AdminDto userDto) {
-        AdminDto createdAdmin = adminServices.createAdmin(userDto);
+    public ResponseEntity<AdminDto> createAdmin(@RequestBody AdminDto adminDto) {
+        AdminDto createdAdmin = adminServices.createAdmin(adminDto);
         return ResponseEntity.status(201).body(createdAdmin);
     }
 
@@ -60,7 +70,12 @@ public class AdminController {
         return ResponseEntity.ok(response);
     }
 
-
+    //doesnt work
+    @GetMapping ("/{id}/allCustomers")
+    public ResponseEntity<List<UserDto>> getAllCustomers(@PathVariable Long id) {
+        List<UserDto> users = userServices.getUsersWithSameAdmin(id);
+        return ResponseEntity.ok(users);
+    }
 
 }
 

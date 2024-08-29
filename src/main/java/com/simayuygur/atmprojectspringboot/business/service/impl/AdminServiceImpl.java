@@ -3,6 +3,7 @@ package com.simayuygur.atmprojectspringboot.business.service.impl;
 import com.simayuygur.atmprojectspringboot.business.AdminDto;
 import com.simayuygur.atmprojectspringboot.business.service.AdminServicesInterface;
 import com.simayuygur.atmprojectspringboot.database.entity.AdminEntity;
+import com.simayuygur.atmprojectspringboot.database.entity.UserEntity;
 import com.simayuygur.atmprojectspringboot.database.repo.AdminRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,9 @@ import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class AdminServiceImpl implements AdminServicesInterface {
@@ -20,6 +23,7 @@ public class AdminServiceImpl implements AdminServicesInterface {
 
     @Autowired
     private ModelMapper modelMapper;
+
     
     @Override
     public List<AdminDto> getAllAdmins() {
@@ -74,6 +78,18 @@ public class AdminServiceImpl implements AdminServicesInterface {
         AdminEntity adminEntity = adminRepository.findByName(name);
         return adminEntity != null && adminEntity.getPassword().equals(password);
     }
+
+    @Override
+    public Long getAdminIdByUsername(String name) throws Throwable {
+        List<AdminEntity> adminEntityList = adminRepository.findAll();
+        for (AdminEntity adminEntity : adminEntityList) {
+            if (adminEntity.getName().equals(name)) {
+                return adminEntity.getId();
+            }
+        }
+        throw new ResourceNotFoundException("Admin does not exist with name " + name);
+    }
+
 
     @Override
     public AdminDto entityToDto(AdminEntity adminEntity) {
