@@ -17,6 +17,10 @@ public interface UserServicesInterface {
     public Long getUserIdByUsername(String name) throws Throwable;
     public boolean authenticateUser(String name, String password);
     public List<UserDto> getUsersWithSameAdmin(Long adminId);
+    public boolean updateMoney(Long id, Long amount) throws Throwable;
+    public UserDto getUserByIban(String iban) throws Throwable;
+    public boolean withdrawMoney(Long id, Long amount) throws Throwable;
+    public void depositMoney(Long id, Long amount) throws Throwable;
 
     //model mapper
     public UserDto entityToDto(UserEntity userEntity);

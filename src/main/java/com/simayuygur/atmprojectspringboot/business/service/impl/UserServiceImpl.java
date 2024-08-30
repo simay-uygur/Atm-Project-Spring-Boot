@@ -2,7 +2,6 @@ package com.simayuygur.atmprojectspringboot.business.service.impl;
 
 import com.simayuygur.atmprojectspringboot.business.UserDto;
 import com.simayuygur.atmprojectspringboot.business.service.UserServicesInterface;
-import com.simayuygur.atmprojectspringboot.database.entity.AdminEntity;
 import com.simayuygur.atmprojectspringboot.database.entity.UserEntity;
 import com.simayuygur.atmprojectspringboot.database.repo.UserRepository;
 import org.modelmapper.ModelMapper;
@@ -86,7 +85,7 @@ public class UserServiceImpl implements UserServicesInterface {
                 return userEntity.getId();
             }
         }
-        throw new ResourceNotFoundException("Admin does not exist with name " + name);
+        throw new ResourceNotFoundException("User does not exist with name " + name);
     }
 
     @Override
@@ -103,6 +102,57 @@ public class UserServiceImpl implements UserServicesInterface {
     }
 
     @Override
+    public boolean updateMoney(Long id, Long amount) throws Throwable {
+        UserEntity userEntity = (UserEntity) userRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("User does not exist with id " + id));
+        if(amount > 0){
+            userEntity.setAmount(userEntity.getAmount() + amount);
+            userRepository.save(userEntity);
+            return true;
+        } else {
+            if(Math.abs(userEntity.getAmount()) < Math.abs(amount)){
+                return false;
+            }
+            else{
+                userEntity.setAmount(userEntity.getAmount() - amount);
+                userRepository.save(userEntity);
+                return true;
+            }
+        }
+    }
+
+    @Override
+    public boolean withdrawMoney(Long id, Long amount) throws Throwable {
+        UserEntity userEntity = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User does not exist with id " + id));
+
+        if (userEntity.getAmount() >= amount) {
+            userEntity.setAmount(userEntity.getAmount() - amount);
+            userRepository.save(userEntity);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public void depositMoney(Long id, Long amount) throws Throwable {
+        UserEntity userEntity = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User does not exist with id " + id));
+
+        userEntity.setAmount(userEntity.getAmount() + amount);
+        userRepository.save(userEntity);
+    }
+
+    @Override
+    public UserDto getUserByIban(String iban) throws Throwable {
+        UserEntity userEntity = userRepository.findByIbanNo(iban);
+        if (userEntity == null) {
+            throw new ResourceNotFoundException("User does not exist with IBAN " + iban);
+        }
+        return entityToDto(userEntity);
+    }
+
+    @Override
     public UserDto entityToDto(UserEntity userEntity) {
         return modelMapper.map(userEntity, UserDto.class);
     }
@@ -111,4 +161,6 @@ public class UserServiceImpl implements UserServicesInterface {
     public UserEntity dtoToEntity(UserDto userDto) {
         return modelMapper.map(userDto, UserEntity.class);
     }
+
+
 }

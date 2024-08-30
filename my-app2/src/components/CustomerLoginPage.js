@@ -19,11 +19,10 @@ const CustomerLoginPage = () => {
 
         try {
             const response = await UserService.loginUser(name, password);
-            const { message, userId } = response;
+            const { message, adminId } = response;
 
             if (message === "Login successful!") {
-//${userId}
-                navigate(`/customers/get/` + userId); // Navigate to customer info page with user ID
+                navigate(`/customers/${adminId}`);
             } else {
                 setError(message);
             }

@@ -1,33 +1,36 @@
+/* src/components/CustomerInfoPage.css */
+
 .customer-info-container {
+    max-width: 800px;
+    margin: 0 auto;
     padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
 }
 
-h2 {
-    margin-bottom: 20px;
+.customer-info-container p {
+    font-size: 16px;
+    color: #333;
 }
 
-.actions {
-    margin-top: 20px;
+.customer-info-container h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #007bff;
 }
 
-.input-group {
-    margin-bottom: 15px;
+.customer-info-container p strong {
+    font-weight: bold;
 }
 
-.input-group label {
-    display: block;
-    margin-bottom: 5px;
+.customer-info-container p {
+    margin: 5px 0;
 }
 
-.input-group input {
-    margin-right: 10px;
-}
-
-button {
-    margin-top: 10px;
-}
-
-.error {
-    color: red;
-    margin-top: 10px;
+.customer-info-container .loading {
+    text-align: center;
+    font-size: 18px;
+    color: #666;
 }
