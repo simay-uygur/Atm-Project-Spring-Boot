@@ -4,12 +4,21 @@ import com.simayuygur.atmprojectspringboot.business.UserDto;
 import com.simayuygur.atmprojectspringboot.business.service.UserServicesInterface;
 import com.simayuygur.atmprojectspringboot.database.entity.UserEntity;
 import com.simayuygur.atmprojectspringboot.database.repo.UserRepository;
+import com.simayuygur.atmprojectspringboot.util.JwtTokenUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -21,10 +30,14 @@ public class UserServiceImpl implements UserServicesInterface {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    //bu login mantığı
     @Override
     public boolean authenticateUser(String name, String password) {
         UserEntity userEntity = userRepository.findByName(name);
-        return userEntity != null && userEntity.getPassword().equals(password);
+        return userEntity != null && passwordEncoder.matches(password, userEntity.getPassword());
     }
 
     @Override
@@ -43,9 +56,15 @@ public class UserServiceImpl implements UserServicesInterface {
         if (userRepository.findByName(userDto.getName()) != null) {
             throw new IllegalArgumentException("Username already exists. Please choose a different username.");
         }
+        String encryptedPassword = passwordEncoder.encode(userDto.getPassword());
+        userDto.setPassword(encryptedPassword);
+
+        if (userDto.getRole() == null) {
+            userDto.setRole("ROLE_USER");
+        }
 
         UserEntity userEntity = dtoToEntity(userDto);
-        userRepository.save(userEntity);
+        userEntity = userRepository.save(userEntity);
         return entityToDto(userEntity);
     }
 
@@ -61,11 +80,14 @@ public class UserServiceImpl implements UserServicesInterface {
         UserEntity userEntity = dtoToEntity(userDto);
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User does not exist with id " + id));
+
         user.setName(userEntity.getName());
-        user.setPassword(userEntity.getPassword());
+        String encryptedPassword = passwordEncoder.encode(userEntity.getPassword());
+        user.setPassword(encryptedPassword);
         user.setAmount(userEntity.getAmount());
         user.setAdmin(userEntity.getAdmin());
-        user.setIbanNo(userEntity.getIbanNo()); //iban and admin are added now
+        user.setIbanNo(userEntity.getIbanNo());
+
         UserEntity updatedUser = userRepository.save(user);
         return entityToDto(updatedUser);
     }
@@ -144,6 +166,11 @@ public class UserServiceImpl implements UserServicesInterface {
     }
 
     @Override
+    public UserDto findByUserName(String username) throws Throwable {
+        return entityToDto(userRepository.findByName(username));
+    }
+
+    @Override
     public UserDto getUserByIban(String iban) throws Throwable {
         UserEntity userEntity = userRepository.findByIbanNo(iban);
         if (userEntity == null) {
@@ -161,6 +188,18 @@ public class UserServiceImpl implements UserServicesInterface {
     public UserEntity dtoToEntity(UserDto userDto) {
         return modelMapper.map(userDto, UserEntity.class);
     }
+
+
+//    //bunu silebilirim emin olamadım şimdi
+//    private Collection<? extends GrantedAuthority> getAuthorities(UserEntity user) throws Throwable {
+////        List<GrantedAuthority> authorities = new ArrayList<>();
+////        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+//        UserDto userDto = findByUserName(user.getName());
+//        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+//        authorities.add(new SimpleGrantedAuthority(userDto.getRole()));
+//        return authorities;
+//    }
+
 
 
 }

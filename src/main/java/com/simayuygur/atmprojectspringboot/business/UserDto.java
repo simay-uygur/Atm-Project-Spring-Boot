@@ -22,6 +22,6 @@ public class UserDto extends BaseEntity implements Serializable {
     private Double amount;
     private Integer adminId;
     private String ibanNo;
-
+    private String role;
 }
 

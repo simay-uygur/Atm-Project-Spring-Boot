@@ -21,7 +21,7 @@ public interface UserServicesInterface {
     public UserDto getUserByIban(String iban) throws Throwable;
     public boolean withdrawMoney(Long id, Long amount) throws Throwable;
     public void depositMoney(Long id, Long amount) throws Throwable;
-
+    public UserDto findByUserName(String username) throws Throwable;
     //model mapper
     public UserDto entityToDto(UserEntity userEntity);
     public UserEntity dtoToEntity(UserDto userDto);

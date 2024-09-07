@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -21,6 +22,10 @@ public class UserController {
     @Autowired
     @Qualifier("userServiceImpl")
     private UserServicesInterface userServices;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody UserDto userDto) {
@@ -38,12 +43,6 @@ public class UserController {
             return ResponseEntity.status(401).body(Map.of("message", "Invalid username or password."));
         }
 
-    }
-
-    @PostMapping
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
-        UserDto createdUser = userServices.createUser(userDto);
-        return ResponseEntity.status(201).body(createdUser);
     }
 
     @GetMapping("/{id}")
@@ -77,7 +76,6 @@ public class UserController {
 
     @PostMapping("/{id}/deposit")
     public ResponseEntity<?> depositMoney(@PathVariable Long id, @RequestParam Long amount) throws Throwable {
-        //Long amount = Long.valueOf(requestBody.get("amount").toString());
 
         if (amount == null || amount <= 0) {
             return ResponseEntity.badRequest().body(Map.of("message", "Amount must be greater than zero."));
@@ -145,3 +143,22 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 }
+
+
+/*
+
+
+
+    @Autowired
+    private UserAuthenticationService userAuthService;
+
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUser(@RequestBody UserDto userDto) {
+        try {
+            String token = userAuthService.authenticateUser(userDto);
+            return ResponseEntity.ok(Map.of("token", token, "message", "Login successful!"));
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body(Map.of("message", e.getMessage()));
+        }
+    }
+ */
