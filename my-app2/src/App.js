@@ -1,11 +1,16 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; // Add necessary imports
-import AdminLoginPage from './components/AdminLoginPage';
-import CustomerLoginPage from './components/CustomerLoginPage';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import CustomerListPage from './components/CustomerListPage';
-import CustomerInfoPage from "./components/CustomerInfoPage";
-import HomePage from './components/HomePage'; // Make sure to import HomePage
+import CustomerInfoPage from './components/CustomerInfoPage';
+import HomePage from './components/HomePage';
+import CreateUserPage from './components/CreateUserPage';
+import CreateAdminPage from './components/CreateAdminPage';
 import { ToastContainer } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css'; // Ensure toast styles are imported
+import 'react-toastify/dist/ReactToastify.css';
+import LoginPage from './components/LoginPage';
+import ProtectedRoute from './components/ProtectedRoute';
+import AdminDashboardPage from './components/AdminDashboardPage';
+import CustomerDashboardPage from './components/CustomerDashboardPage';
 
 function App() {
     return (
@@ -13,12 +18,31 @@ function App() {
             <ToastContainer />
             <Router>
                 <Routes>
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/admin-login" element={<AdminLoginPage />} />
-                    <Route path="/admin/customers/:adminName" element={<CustomerListPage />} />
-                    <Route path="/customer-login" element={<CustomerLoginPage />} />
-                    <Route path="/admins/:adminId/allCustomers" element={<CustomerListPage />} />
-                    <Route path="/customers/:userId" element={<CustomerInfoPage />} />
+                    <Route path="/" element={<LoginPage />} />
+                    <Route path="/create-user" element={<CreateUserPage />} />
+                    <Route path="/create-admin" element={<CreateAdminPage />} />
+
+                    <Route path="/admin/dashboard" element={
+                        <ProtectedRoute>
+                            <AdminDashboardPage />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/customer/dashboard" element={
+                        <ProtectedRoute>
+                            <CustomerDashboardPage />
+                        </ProtectedRoute>
+                    } />
+
+                    <Route path="/admin/customers/:adminName" element={
+                        <ProtectedRoute>
+                            <CustomerListPage />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/customers/:userId" element={
+                        <ProtectedRoute>
+                            <CustomerInfoPage />
+                        </ProtectedRoute>
+                    } />
                 </Routes>
             </Router>
         </>
