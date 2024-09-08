@@ -12,6 +12,14 @@ const HomePage = () => {
         navigate('/customer-login');
     };
 
+    const handleCreateUser = () => {
+        navigate('/create-user');
+    };
+
+    const handleCreateAdmin = () => {
+        navigate('/create-admin');
+    };
+
     return (
         <div style={styles.container}>
             <h1>Welcome to the Portal</h1>
@@ -20,6 +28,12 @@ const HomePage = () => {
             </button>
             <button style={styles.button} onClick={handleCustomerLogin}>
                 Customer Login
+            </button>
+            <button style={styles.button} onClick={handleCreateUser}>
+                Create User
+            </button>
+            <button style={styles.button} onClick={handleCreateAdmin}>
+                Create Admin
             </button>
         </div>
     );
