@@ -7,12 +7,20 @@ const axiosInstance = axios.create({
         'Content-Type': 'application/json'
     }
 });
+
+const createUser = async (user) => {
+    const response = await axios.post(`${API_BASE_URL}/register`, user);
+    return response.data;
+};
+
 const UserService = {
+
 
     loginUser: async (name, password) => {
         try {
-            const response = await axios.post(`${API_BASE_URL}/login`, { name, password });
-            return response.data;
+            const loginUser = (username, password) => {
+                return axios.post(`${API_BASE_URL}/authenticate`, { username, password });
+            };
         } catch (error) {
             console.error('Error logging in:', error);
             throw error;
@@ -64,6 +72,10 @@ const UserService = {
         }
     },
 
+
+    createUser(param) {
+        
+    }
 };
 
 export default UserService;

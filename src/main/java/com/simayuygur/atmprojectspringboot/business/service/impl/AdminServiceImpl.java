@@ -3,20 +3,17 @@ package com.simayuygur.atmprojectspringboot.business.service.impl;
 import com.simayuygur.atmprojectspringboot.business.AdminDto;
 import com.simayuygur.atmprojectspringboot.business.service.AdminServicesInterface;
 import com.simayuygur.atmprojectspringboot.database.entity.AdminEntity;
-import com.simayuygur.atmprojectspringboot.database.entity.UserEntity;
 import com.simayuygur.atmprojectspringboot.database.repo.AdminRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
-public class AdminServiceImpl implements AdminServicesInterface {
+public class AdminServiceImpl implements AdminServicesInterface  {
 
     @Autowired
     private AdminRepository adminRepository;
@@ -24,7 +21,9 @@ public class AdminServiceImpl implements AdminServicesInterface {
     @Autowired
     private ModelMapper modelMapper;
 
-    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public List<AdminDto> getAllAdmins() {
         List<AdminDto> adminDtoList = new ArrayList<>();
@@ -39,18 +38,27 @@ public class AdminServiceImpl implements AdminServicesInterface {
     @Override
     public AdminDto createAdmin(AdminDto adminDto) {
         if (adminRepository.findByName(adminDto.getName()) != null) {
-            throw new IllegalArgumentException("Username already exists. Please choose a different username.");
+            throw new IllegalArgumentException("Admin already exists with the same username. Please choose a different username.");
+        }
+        if (adminDto.getAmountTotal() == null) {
+            adminDto.setAmountTotal(0.0); //default olsun diye
         }
 
+        if (adminDto.getRole() == null) {
+            adminDto.setRole("ROLE_ADMIN");
+        }
+        String encryptedPassword = passwordEncoder.encode(adminDto.getPassword());
+        adminDto.setPassword(encryptedPassword);
+
         AdminEntity adminEntity = dtoToEntity(adminDto);
-        adminRepository.save(adminEntity);
+        adminEntity = adminRepository.save(adminEntity); //added to the user
         return entityToDto(adminEntity);
     }
 
     @Override
     public AdminDto getAdminById(Long id) throws Throwable {
         AdminEntity adminEntity = adminRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User does not exist with id " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Admin does not exist with id " + id));
         return entityToDto(adminEntity);
     }
 
@@ -61,7 +69,8 @@ public class AdminServiceImpl implements AdminServicesInterface {
                 .orElseThrow(() -> new ResourceNotFoundException("Admin does not exist with id " + id));
         admin.setName(adminEntity.getName());
         admin.setPassword(adminEntity.getPassword());
-        admin.setAmountTotal(adminEntity.getAmountTotal());
+        admin.setAmountTotal(adminEntity.getAmountTotal()); //setrole
+        admin.setRole(adminEntity.getRole());
         AdminEntity updatedAdmin = adminRepository.save(admin);
         return entityToDto(updatedAdmin);
     }
@@ -69,14 +78,14 @@ public class AdminServiceImpl implements AdminServicesInterface {
     @Override
     public void deleteAdmin(Long id) throws Throwable {
         AdminEntity adminEntity = adminRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User does not exist with id " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Admin does not exist with id " + id));
         adminRepository.deleteById(id);
     }
 
     @Override
     public boolean authenticateAdmin(String name, String password) {
         AdminEntity adminEntity = adminRepository.findByName(name);
-        return adminEntity != null && adminEntity.getPassword().equals(password);
+        return adminEntity != null && passwordEncoder.matches(password, adminEntity.getPassword());
     }
 
     @Override
@@ -90,6 +99,11 @@ public class AdminServiceImpl implements AdminServicesInterface {
         throw new ResourceNotFoundException("Admin does not exist with name " + name);
     }
 
+    @Override
+    public AdminDto getAdminByUserName(String username) throws Throwable {
+        Long id = getAdminIdByUsername(username);
+        return getAdminById(id);
+    }
 
     @Override
     public AdminDto entityToDto(AdminEntity adminEntity) {
@@ -100,4 +114,5 @@ public class AdminServiceImpl implements AdminServicesInterface {
     public AdminEntity dtoToEntity(AdminDto adminDto) {
         return modelMapper.map(adminDto, AdminEntity.class);
     }
+
 }

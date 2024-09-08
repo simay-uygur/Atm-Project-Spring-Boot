@@ -1,6 +1,7 @@
 package com.simayuygur.atmprojectspringboot.business.service;
 
 import com.simayuygur.atmprojectspringboot.business.AdminDto;
+import com.simayuygur.atmprojectspringboot.business.UserDto;
 import com.simayuygur.atmprojectspringboot.database.entity.AdminEntity;
 
 import java.util.List;
@@ -14,8 +15,8 @@ public interface AdminServicesInterface {
     public AdminDto updateAdmin(Long id, AdminDto adminDto) throws Throwable;
     public void deleteAdmin(Long id) throws Throwable;
     public boolean authenticateAdmin(String name, String password);
-    //public Set<UserEntity> getAllCustomers(Long id);
     public Long getAdminIdByUsername(String name) throws Throwable;
+    public AdminDto getAdminByUserName(String username) throws Throwable;
 
     //model mapper
     public AdminDto entityToDto(AdminEntity AdminEntity);

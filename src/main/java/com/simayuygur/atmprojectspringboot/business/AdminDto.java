@@ -16,4 +16,5 @@ public class AdminDto {
     private String name;
     private String password;
     private Double amountTotal;  //default zero
+    private String role; //new
 }

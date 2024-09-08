@@ -1,17 +1,11 @@
 package com.simayuygur.atmprojectspringboot.config;
 
-import com.simayuygur.atmprojectspringboot.bean.PasswordEncoderBean;
-import com.simayuygur.atmprojectspringboot.business.service.impl.AdminServiceImpl;
-import com.simayuygur.atmprojectspringboot.business.service.impl.UserServiceImpl;
 import com.simayuygur.atmprojectspringboot.jwt.JwtAuthenticationEntryPoint;
 import com.simayuygur.atmprojectspringboot.jwt.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -28,37 +22,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class WebSecurityConfig implements WebSecurityCustomizer {
 
-
     @Autowired
     private JwtRequestFilter jwtRequestFilter; // Autowire the JwtRequestFilter
 
     @Autowired
     private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-    @Autowired
-    private PasswordEncoderBean passwordEncoderBean;
-
-    @Autowired
-    private UserServiceImpl userDetailsService;  // Your custom service for users
-
-    @Autowired
-    private AdminServiceImpl adminDetailsService;  // Your custom service for admins
-
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
-
-//    @Bean
-//    public AuthenticationProvider userAuthenticationProvider() {
-//        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-//        authProvider.setUserDetailsService(userDetailsService); // Set your custom user service
-//        authProvider.setPasswordEncoder(passwordEncoderBean.passwordEncoder());
-//        return authProvider;
-//    }
-//
-
-
 
     @Override
     public void customize(WebSecurity web) {
@@ -74,7 +47,7 @@ public class WebSecurityConfig implements WebSecurityCustomizer {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)// Disable CSRF since JWT is used
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/user/**").hasRole("USER")
@@ -83,23 +56,14 @@ public class WebSecurityConfig implements WebSecurityCustomizer {
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Stateless session for JWT
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint(jwtAuthenticationEntryPoint) // Custom entry point for unauthorized requests
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 )
-                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class); // Add the unified filter
-
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         ;
-//        http.addFilterBefore(jwtAdminFilter, UsernamePasswordAuthenticationFilter.class);
-//        http.addFilterBefore(jwtUserFilter, UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
-
-
-
-
-    //i saw it in a website
 
 }

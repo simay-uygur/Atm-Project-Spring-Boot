@@ -8,11 +8,19 @@ const axiosInstance = axios.create({
         'Content-Type': 'application/json'
     }
 });
+
 const AdminService = {
+
+    createAdmin : async (admin) => {
+        const response = await axios.post(`${API_BASE_URL}/admins/register`, admin);
+        return response.data;
+    },
+
     loginAdmin: async (name, password) => {
         try {
-            const response = await axios.post(`${API_BASE_URL}/admins/login`, { name, password });
-            return response.data; // Return the full response data
+            const loginAdmin = (username, password) => {
+                return axios.post(`${API_BASE_URL}/admins/authenticate`, { username, password });
+            };
         } catch (error) {
             console.error('Error logging in:', error);
             throw error; // Propagate error to be handled by calling component

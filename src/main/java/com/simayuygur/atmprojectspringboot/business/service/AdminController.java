@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-//i didnt use any logger in both of the controller classes
 @RestController
 @RequestMapping("/api/v1/admins")
 public class AdminController {
@@ -25,27 +24,27 @@ public class AdminController {
     private UserServicesInterface userServices;
 
 
-    @PostMapping("/login")
-    public ResponseEntity<?> loginAdmin(@RequestBody AdminDto adminDto) {
-        boolean isAuthenticated = adminServices.authenticateAdmin(adminDto.getName(), adminDto.getPassword());
-        if (isAuthenticated) {
-            Long adminId = null;
-            try {
-                adminId = adminServices.getAdminIdByUsername(adminDto.getName());
-            } catch (Throwable e) {
-                throw new RuntimeException(e);
-            }
-            return ResponseEntity.ok(Map.of("message", "Login successful!", "adminId", adminId));
-        } else {
-            return ResponseEntity.status(401).body(Map.of("message", "Invalid username or password."));
-        }
-    }
+//    @PostMapping("/login")
+//    public ResponseEntity<?> loginAdmin(@RequestBody AdminDto adminDto) {
+//        boolean isAuthenticated = adminServices.authenticateAdmin(adminDto.getName(), adminDto.getPassword());
+//        if (isAuthenticated) {
+//            Long adminId = null;
+//            try {
+//                adminId = adminServices.getAdminIdByUsername(adminDto.getName());
+//            } catch (Throwable e) {
+//                throw new RuntimeException(e);
+//            }
+//            return ResponseEntity.ok(Map.of("message", "Login successful!", "adminId", adminId));
+//        } else {
+//            return ResponseEntity.status(401).body(Map.of("message", "Invalid username or password."));
+//        }
+//    }
 
-    @PostMapping
-    public ResponseEntity<AdminDto> createAdmin(@RequestBody AdminDto adminDto) {
-        AdminDto createdAdmin = adminServices.createAdmin(adminDto);
-        return ResponseEntity.status(201).body(createdAdmin);
-    }
+//    @PostMapping
+//    public ResponseEntity<AdminDto> createAdmin(@RequestBody AdminDto adminDto) {
+//        AdminDto createdAdmin = adminServices.createAdmin(adminDto);
+//        return ResponseEntity.status(201).body(createdAdmin);
+//    }
 
     @GetMapping("/{id}")
     public ResponseEntity<AdminDto> getAdminById(@PathVariable Long id) throws Throwable {

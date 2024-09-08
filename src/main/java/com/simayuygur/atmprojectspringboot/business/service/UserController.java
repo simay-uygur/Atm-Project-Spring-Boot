@@ -23,27 +23,24 @@ public class UserController {
     @Qualifier("userServiceImpl")
     private UserServicesInterface userServices;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
-
-    @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody UserDto userDto) {
-        boolean isAuthenticated = userServices.authenticateUser(userDto.getName(), userDto.getPassword());
-
-        if (isAuthenticated) {
-            Long userId = null;
-            try {
-                userId = userServices.getUserIdByUsername(userDto.getName());
-            } catch (Throwable e) {
-                throw new RuntimeException(e);
-            }
-            return ResponseEntity.ok(Map.of("message", "Login successful!", "adminId", userId));
-        } else {
-            return ResponseEntity.status(401).body(Map.of("message", "Invalid username or password."));
-        }
-
-    }
+//    @PostMapping("/login")
+//    public ResponseEntity<?> loginUser(@RequestBody UserDto userDto) {
+//        boolean isAuthenticated = userServices.authenticateUser(userDto.getName(), userDto.getPassword());
+//
+//        if (isAuthenticated) {
+//            Long userId = null;
+//            try {
+//                userId = userServices.getUserIdByUsername(userDto.getName());
+//            } catch (Throwable e) {
+//                throw new RuntimeException(e);
+//            }
+//            return ResponseEntity.ok(Map.of("message", "Login successful!", "adminId", userId));
+//        } else {
+//            return ResponseEntity.status(401).body(Map.of("message", "Invalid username or password."));
+//        }
+//
+//    }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getUserById(@PathVariable Long id) throws Throwable {
@@ -143,22 +140,3 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 }
-
-
-/*
-
-
-
-    @Autowired
-    private UserAuthenticationService userAuthService;
-
-    @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody UserDto userDto) {
-        try {
-            String token = userAuthService.authenticateUser(userDto);
-            return ResponseEntity.ok(Map.of("token", token, "message", "Login successful!"));
-        } catch (Exception e) {
-            return ResponseEntity.status(401).body(Map.of("message", e.getMessage()));
-        }
-    }
- */
