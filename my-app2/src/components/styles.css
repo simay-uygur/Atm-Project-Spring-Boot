@@ -1,0 +1,12 @@
+/* src/components/styles.css */
+.alert {
+    padding: 1em;
+    border-radius: 0.5em;
+}
+
+.alert-info {
+    background-color: #e0f7fa;
+    color: #00796b;
+}
+
+/* Add more styles for success, warning, error, button, card, input, label, radio-group */
