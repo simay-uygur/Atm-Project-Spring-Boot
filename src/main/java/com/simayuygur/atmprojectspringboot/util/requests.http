@@ -1,0 +1,43 @@
+POST /api/v1/login HTTP/1.1
+Host: localhost:8080
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "password123"
+}
+
+###
+
+POST http://localhost:8080/api/v1/authenticate
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "password123"
+}
+
+###
+ GET http://localhost:8080/api/v1/authenticate
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJyb2xlcyI6WyJST0xFX1VTRVIiXSwic3ViIjoidGVzdHVzZXIiLCJpYXQiOjE3MjU2MjI3OTUsImV4cCI6MTcyODIxNDc5NX0.LiGqa3ONKdt2yOGhq702chNFEX_CBf109xVrvU4yVoY8dma2MYFMFr-QUV-i4B1h
+
+
+###
+POST /api/v1/login HTTP/1.1
+Host: localhost:8080
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "password123"
+}
+
+###
+POST /api/v1/login HTTP/1.1
+Host: localhost:8080
+Content-Type: application/json
+
+{
+  "name": "admino",
+  "password": "lolo"
+}
